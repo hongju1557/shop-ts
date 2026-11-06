@@ -1,0 +1,312 @@
+/*border-box: 모든 요소의 width와 height에
+  padding과 border까지 포함시키는 설정입니다.
+*/
+* { box-sizing: border-box; }
+body { margin: 0; font-family: sans-serif; }
+a { color: inherit; text-decoration: none; }
+
+.header { display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px; background: #222; color: #fff; }
+.header h1 { margin: 0; font-size: 20px; color: #fff;}
+.header nav { display: flex; gap: 16px; }
+
+/* #root 1126px - 100% */
+main {width: 100%; max-width: 960px; margin: 0 auto; padding: 24px; }
+
+.product-list{display: flex; flex-wrap: wrap; gap: 16px}
+.product-card {
+  /* .product-list에 gap: 16px이 있어서 카드 사이마다 16px씩 간격이 생깁니다.
+    카드가 3개면 간격은 2개입니다.
+    | 카드 | 16px | 카드 | 16px | 카드 |
+    calc() 함수: %와 px처럼 단위가 다른 값을 섞어서 계산할 수 있게 해 주는 CSS 함수입니다.
+    주의할 점은 +와 - 앞뒤에 반드시 공백을 넣어야 한다는 것입니다.
+    100%-32px처럼 붙여 쓰면 동작하지 않습니다.
+  */
+  width: calc((100% - 32px) / 3);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* 상품 상세 스타일 */
+.product-detail {
+  /* #root에 text-align: center가 있어서 상세 화면은 왼쪽 정렬로 되돌립니다. */
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 32px;
+  /* 세로로 쌓고 gap으로 요소 사이 간격을 한 번에 지정합니다. */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.product-detail_category {
+  /* flex 안에서 기본값(stretch)이면 가로로 꽉 차므로 글자 길이만큼만 차지하게 합니다. */
+  align-self: flex-start;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.product-detail_price { font-size: 24px; font-weight: 700; color: var(--text-h); }
+.product-detail_desc {
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  line-height: 1.7;
+}
+
+/* 상품 등록 스타일 */
+.product-add {
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 32px;
+}
+.product-add form { display: flex; flex-direction: column; gap: 16px; }
+.product-add form > div { display: flex; flex-direction: column; gap: 6px; }
+.product-add label { font-size: 14px; font-weight: 600; color: var(--text-h); }
+.product-add input,
+.product-add select,
+.product-add textarea {
+  /* 입력 요소는 부모의 글꼴을 물려받지 않으므로 직접 지정합니다. */
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+.product-add textarea { resize: vertical; }
+.product-add_error { color: #d93025; font-size: 14px; }
+/* 위의 `.product-add form > div`보다 우선하도록 선택자를 더 구체적으로 씁니다. */
+.product-add form > .product-add_buttons { flex-direction: row; gap: 8px; justify-content: flex-end; }
+.product-add button {
+  font: inherit;
+  padding: 8px 20px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.product-add button[type="submit"] { background: #222; border-color: #222; color: #fff; }
+
+/* 장바구니 담기 버튼 */
+.product-card button,
+.product-detail_cart {
+  font: inherit; /* 부모의 글꼴을 물려받음 */
+  margin: 8px;
+  padding: 8px 20px;
+  border: 1px solid #222;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+}
+.product-detail_cart { align-self: flex-end; }
+
+/* 장바구니 스타일 */
+.cart {
+  text-align: left;
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 32px;
+}
+.cart h2 { margin-top: 0; }
+.cart_empty { color: var(--text); }
+.cart_list { list-style: none; margin: 0; padding: 0; }
+.cart_item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #ddd;
+}
+.cart_info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.cart_category { font-size: 13px; color: var(--accent); }
+.cart_quantity { display: flex; align-items: center; gap: 8px; }
+.cart_quantity span { min-width: 24px; text-align: center; }
+.cart_subtotal { width: 120px; text-align: right; color: var(--text-h); }
+.cart button {
+  font: inherit;
+  padding: 4px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.cart button:disabled { opacity: 0.4; cursor: not-allowed; }
+.cart_remove { color: #d93025 !important; }
+.cart_summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 16px;
+  padding: 20px 0;
+}
+.cart_summary strong { font-size: 24px; color: var(--text-h); }
+.cart_buttons { display: flex; justify-content: space-between; align-items: center; }
+.cart_link { color: var(--accent); }
+/* 전체 비우기 줄 아래에 가로 전체 너비로 배치합니다.
+   `.cart button` 기본 스타일보다 우선하도록 선택자를 더 구체적으로 씁니다. */
+.cart .cart_order {
+  display: block; 
+  width: 100%; 
+  margin-top: 20px; 
+  padding: 12px;
+  border-radius: 6px;
+  background: rgb(3, 188, 65);
+  color: #eeeeee;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cart .cart_order:hover { background: #6fee6d; }
+
+/* 헤더 로그아웃 버튼: 링크처럼 보이게 합니다. */
+.header nav { align-items: center; }
+.header button {
+  font: inherit;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* 로그인 스타일 (회원가입과 공통) */
+.sign-in,
+.sign-up {
+  text-align: left;
+  max-width: 400px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 32px;
+}
+.sign-in h2,
+.sign-up h2 { margin-top: 0; }
+.sign-in form,
+.sign-up form { display: flex; flex-direction: column; gap: 16px; }
+.sign-in form > div,
+.sign-up form > div { display: flex; flex-direction: column; gap: 6px; }
+.sign-in label,
+.sign-up label { font-size: 14px; font-weight: 600; color: var(--text-h); }
+.sign-in input,
+.sign-up input {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+.sign-in_error,
+.sign-up_error { margin: 0; color: #d93025; font-size: 14px; }
+.sign-in button,
+.sign-up button {
+  font: inherit;
+  padding: 10px 20px;
+  border: 1px solid #222;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+}
+.signup-link { margin: 16px 0 0; text-align: center; font-size: 14px; }
+.signup-link a { color: var(--accent); }
+
+
+/* 회원 가입 스타일 */
+/* 입력칸이 많아서 로그인보다 간격을 조금 줄입니다. */
+.sign-up form { gap: 12px; }
+.sign-up input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* 관리자 대시보드 */
+.admin-page {
+  /* #root의 가운데 정렬을 왼쪽 정렬로 되돌립니다. */
+  text-align: left;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.admin-header h2 { margin: 0; }
+.admin-menu { display: flex; gap: 8px; }
+.admin-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-h);
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.admin-btn:hover { border-color: #222; }
+.admin-btn_primary { background: #222; border-color: #222; color: #fff; }
+.admin-btn_primary:hover { background: #444; }
+
+/* 요약 카드: 화면이 좁으면 flex-wrap으로 다음 줄로 넘어갑니다. */
+.admin-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 24px 0 32px;
+}
+.admin-card {
+  flex: 1 1 180px; /* 기본 180px에서 남는 공간을 똑같이 나눠 가집니다. */
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-left: 4px solid rgb(92, 92, 252);
+  border-radius: 8px;
+  background: var(--bg);
+  transition: transform 0.2s;
+}
+.admin-card:hover { transform: translateY(-2px);}
+.admin-card p { margin: 0 0 8px; font-size: 14px; color: var(--text); }
+.admin-card strong {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-h);
+  white-space: nowrap; /* "95,400원"이 두 줄로 나뉘지 않게 */
+}
+.admin-page h3 { margin: 32px 0 12px; font-size: 18px; color: var(--text-h); }
+
+/* 표: 좁은 화면에서는 표만 가로로 스크롤됩니다. */
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.admin-page table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.admin-page th,
+.admin-page td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.admin-page th {
+  background: var(--code-bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+.admin-page tbody tr:last-child td { border-bottom: none; }
+.admin-page tbody tr:hover { background: var(--accent-bg); }
+.admin-page .admin-num { text-align: right;}
