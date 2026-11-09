@@ -8,7 +8,7 @@ export interface Product{
     category: Category;
     price: number;
     description: string;
-    image?:string;
+    image?: string;     // 상품 이미지 경로(문자열) - 선택 속성
 }
 
 // 상품 등록 폼 타입 정의
@@ -16,7 +16,7 @@ export interface ProductForm{
     pName: string;
     category: Category;
     price: number;
-    description: string; // 상품 이미지 경로
+    description: string;
 }
 
 // 상품 등록시 입력받는 값

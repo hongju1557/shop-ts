@@ -3,7 +3,6 @@ import { useProduct } from "../context/ProductContext";
 import { useCart } from "../context/CartContext";
 
 const NO_IMAGE = "/images/no-image.png"
-
 // 상품 상세보기 컴포넌트
 const ProductDetail = () => {
     const {id} = useParams<{id: string}>();
@@ -23,9 +22,15 @@ const ProductDetail = () => {
             {/* -?.은 옵셔널 체이닝- 상품을 못찾아 undefined일때 오류 대신
               undefined를 돌려준다 */}
             <Link to='/' className="product-detail_back" >← 상품 목록</Link>
+            <Link to={`/product/${product.id}`}>
+                <img 
+                    className="product-detail_img"
+                    src={product.image ?? NO_IMAGE}
+                    alt={product.pName} 
+                />
+            </Link>
             <span className="product-detail_category">{product?.category}</span>
             <h2>{product?.pName}</h2>
-            <img src={product.image ?? NO_IMAGE} alt={product.image} />
             <p className="product-detail_price">{product?.price.toLocaleString()}원</p>
             <p className="product-detail_desc">{product?.description}</p>
             <button 
