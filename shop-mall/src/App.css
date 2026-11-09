@@ -28,6 +28,15 @@ main {width: 100%; max-width: 960px; margin: 0 auto; padding: 24px; }
   padding: 16px;
 }
 
+.product-card_image {
+  width: 100%;
+  display: block;
+  aspect-ratio: 4/3;
+  object-fit: contain;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
 /* 상품 상세 스타일 */
 .product-detail {
   /* #root에 text-align: center가 있어서 상세 화면은 왼쪽 정렬로 되돌립니다. */
