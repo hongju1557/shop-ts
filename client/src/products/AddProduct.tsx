@@ -1,5 +1,6 @@
+import { errorMessage } from "../api/errors";
 import { useState } from "react";
-import type { ProductForm } from "../types/product";
+import type { ProductForm, Product } from "../types/product";
 import { useProduct } from "../context/ProductContext";
 import { useNavigate } from "react-router-dom";
 
@@ -11,9 +12,10 @@ const initialForm: ProductForm = {
     description: ""
 }
 
-const AddProduct = () => {
-    const [form, setForm] = useState<ProductForm>(initialForm);
-    const { addProduct } = useProduct();
+const AddProduct = ({ product }: { product?: Product }) => {
+    const [form, setForm] = useState<ProductForm>(product ?? initialForm);
+    const { addProduct, updateProduct } = useProduct();
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
@@ -27,15 +29,17 @@ const AddProduct = () => {
     }
 
     //  폼 제출 핸들러
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (submitting) return;
+        setError(null);
 
         // 유효성 검사
         if(!pName.trim()){
             setError("상품명을 입력해주세요")
             return;
         }
-        if(!price || price <= 0){
+        if(!Number.isSafeInteger(Number(price)) || Number(price) <= 0 || Number(price) > 2147483647){
             setError("가격을 올바르게 입력해주세요")
             return;
         }
@@ -45,25 +49,32 @@ const AddProduct = () => {
         }
 
         // 상품 추가 함수 호출
-        addProduct({
-            pName,
-            category,
-            price: Number(price),  //화면에 입력한 가격은 문자형이므로 숫자형변환
-            description
-        });
-        alert("상품이 등록되었습니다.");
-        navigate('/');  //상품 목록으로 이동
+        const values = {
+            pName: pName.trim(), category, price: Number(price),
+            description: description.trim(), image: product?.image
+        };
+        setSubmitting(true);
+        try {
+            if (product) await updateProduct(product.id, values);
+            else await addProduct(values);
+            alert(product ? "상품이 수정되었습니다." : "상품이 등록되었습니다.");
+            navigate(product ? `/product/${product.id}` : '/');
+        } catch (err) {
+            setError(errorMessage(err, '상품 저장에 실패했습니다. 다시 시도해주세요.'));
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     // 취소 버튼 - 폼 초기화
     const handleCancel = () => {
-        setForm(initialForm);
+        setForm(product ?? initialForm);
         setError(null);
     }
 
     return(
         <div className="product-add">
-            <h2>상품 등록</h2>
+            <h2>{product ? "상품 수정" : "상품 등록"}</h2>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="pName">상품명</label>
@@ -114,7 +125,7 @@ const AddProduct = () => {
                 {error && 
                     <p className="product-add_error">{error}</p>}
                 <div className="product-add_buttons">
-                    <button type="submit">등록</button>
+                    <button type="submit" disabled={submitting}>{submitting ? "저장 중…" : product ? "수정" : "등록"}</button>
                     <button 
                         type="button"
                         onClick={handleCancel}

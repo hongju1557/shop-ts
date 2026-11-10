@@ -1,28 +1,40 @@
 import { useEffect, useState } from "react"
 import { ProductContext } from "./ProductContext"
 import type {NewProduct, Product} from "../types/product"
-import { getProducts } from "../api/products"
+import { getProducts, createProduct, editProduct, removeProduct } from "../api/products"
 
 
 // ProductProvider는 저장소(repository) 역할
 const ProductProvider = ({children} : {children: React.ReactNode}) => {
     const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(()=> {
         getProducts()
             .then(setProducts)
-            .catch(err => console.log("상품 목록 조회 오류",err))
+            .catch(() => setError("상품 목록을 불러오지 못했습니다. 잠시 후 새로고침해주세요."))
+            .finally(() => setLoading(false))
     },[])
 
     // 상품 추가 함수
-    const addProduct = (newProduct: NewProduct) => {
-        // 순번으로 자동으로 저장(유일해야 하므로 날짜와시간으로 사용)
-        const product: Product = {...newProduct, id: Date.now()};
-        setProducts([...products, product])
+    const addProduct = async (newProduct: NewProduct) => {
+        const product = await createProduct(newProduct);
+        setProducts(previous => [...previous, product]);
     }
 
+    const updateProduct = async (id: number, newProduct: NewProduct) => {
+        const product = await editProduct(id, newProduct);
+        setProducts(previous => previous.map(item => item.id === id ? product : item));
+    };
+
+    const deleteProduct = async (id: number) => {
+        await removeProduct(id);
+        setProducts(previous => previous.filter(item => item.id !== id));
+    };
+
     return(
-        <ProductContext.Provider value={{products, addProduct}}>
+        <ProductContext.Provider value={{products, loading, error, addProduct, updateProduct, deleteProduct}}>
             {children}
         </ProductContext.Provider>
     )

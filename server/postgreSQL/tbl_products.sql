@@ -19,5 +19,7 @@ INSERT INTO products (p_name, category, price, description, image) VALUES
 -- 전체 조회
 SELECT * FROM products;
 
+-- 테이블 삭제가 필요한 경우에만 별도로 실행: DROP TABLE products;
+
 
 

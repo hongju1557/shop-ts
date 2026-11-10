@@ -1,3 +1,4 @@
+import { errorMessage } from "../api/errors";
 import { useState } from "react";
 import type { SignUpForm } from "../types/user";
 import { useUser } from "../context/UserContext";
@@ -18,6 +19,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const SignUp = () => {
     const [form, setForm] = useState<SignUpForm>(initialForm);
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { users, signup } = useUser();  //Context API의 사용자 훅 사용
 
@@ -32,8 +34,10 @@ const SignUp = () => {
     }
 
     // 폼 제출 핸들러
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();  //기본 동작 막기
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (submitting) return;
+        setError(null);  //기본 동작 막기
 
         // 유효성 검사
         if(!USERNAME_REGEX.test(username)){
@@ -63,15 +67,22 @@ const SignUp = () => {
         }
 
         // 회원 가입 함수 호출
-        signup({
-            username,
-            password,
-            name: name.trim(),
-            email: email.trim(),
-            role: "user"
-        });
-        alert("회원가입이 완료되었습니다. 로그인 해주세요");
-        navigate('/'); //로그인 페이지로 이동
+        setSubmitting(true);
+        try {
+            await signup({
+                username,
+                password,
+                name: name.trim(),
+                email: email.trim(),
+                role: "user"
+            });
+            alert("회원가입이 완료되었습니다. 로그인 해주세요");
+            navigate('/signin');
+        } catch (err) {
+            setError(errorMessage(err, '회원가입에 실패했습니다. 다시 시도해주세요.'));
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return(
@@ -135,7 +146,7 @@ const SignUp = () => {
                 </div>
                 {error && 
                     <p className="sign-up_error">{error}</p>}
-                <button type="submit">등록</button>
+                <button type="submit" disabled={submitting}>{submitting ? "등록 중…" : "등록"}</button>
 
                 <p className="signup-link">
                     이미 계정이 있으신가요? <Link to='/signin'>로그인</Link>

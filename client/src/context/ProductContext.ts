@@ -4,7 +4,11 @@ import type {Product, NewProduct} from "../types/product"
 // 상품 컨텍스트 타입 정의
 interface ProductContextType{
     products: Product[];  //상품목록, 상품상세보기
-    addProduct: (newProduct: NewProduct) => void  // 상품 등록
+    loading: boolean;
+    error: string | null;
+    addProduct: (newProduct: NewProduct) => Promise<void>;
+    updateProduct: (id: number, product: NewProduct) => Promise<void>;
+    deleteProduct: (id: number) => Promise<void>;
 }
 
 // 상품 컨텍스트 생성

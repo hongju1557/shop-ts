@@ -11,6 +11,7 @@ import UserProvider from './context/UserProvider'
 import SignUp from './users/SignUp'
 import SignIn from './users/SignIn'
 import AdminPage from './users/AdminPage'
+import EditProduct from './products/EditProduct'
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path='/' element={<ProductList />} />
                 <Route path='/product/:id' element={<ProductDetail />} />
                 <Route path='/product/new' element={<AddProduct />} />
+                <Route path='/product/:id/edit' element={<EditProduct />} />
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/signup' element={<SignUp />} />
                 <Route path='/signin' element={<SignIn />} />

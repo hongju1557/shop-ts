@@ -1,4 +1,4 @@
-import type { Category, Product } from "../types/product";
+import type { Category, Product, NewProduct } from "../types/product";
 import api from "./api";
 
 interface ProductRow{
@@ -25,3 +25,17 @@ export const getProducts = async () => {
     const response = await api.get<ProductRow[]>('/products');
     return response.data.map(toProduct);
 }
+
+export const createProduct = async (product: NewProduct) => {
+    const response = await api.post<ProductRow>('/products', product);
+    return toProduct(response.data);
+};
+
+export const editProduct = async (id: number, product: NewProduct) => {
+    const response = await api.put<ProductRow>(`/products/${id}`, product);
+    return toProduct(response.data);
+};
+
+export const removeProduct = async (id: number) => {
+    await api.delete(`/products/${id}`);
+};
