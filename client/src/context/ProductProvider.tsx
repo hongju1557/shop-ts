@@ -1,11 +1,18 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ProductContext } from "./ProductContext"
 import type {NewProduct, Product} from "../types/product"
-import {initialProducts} from "../datas/products"
+import { getProducts } from "../api/products"
+
 
 // ProductProvider는 저장소(repository) 역할
 const ProductProvider = ({children} : {children: React.ReactNode}) => {
-    const [products, setProducts] = useState<Product[]>(initialProducts);
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(()=> {
+        getProducts()
+            .then(setProducts)
+            .catch(err => console.log("상품 목록 조회 오류",err))
+    },[])
 
     // 상품 추가 함수
     const addProduct = (newProduct: NewProduct) => {
