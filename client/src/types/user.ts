@@ -5,6 +5,7 @@ export type Role = "user" | "admin"
 export interface User{
     id: number,
     username: string,
+    password?: string,
     name: string,
     email: string,
     role: Role

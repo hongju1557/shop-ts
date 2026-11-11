@@ -17,6 +17,7 @@ export interface ProductForm{
     category: Category;
     price: number;
     description: string;
+    image: string;
 }
 
 // 상품 등록시 입력받는 값

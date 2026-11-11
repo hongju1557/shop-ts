@@ -326,3 +326,23 @@ main {width: 100%; max-width: 960px; margin: 0 auto; padding: 24px; }
 .admin-page tbody tr:last-child td { border-bottom: none; }
 .admin-page tbody tr:hover { background: var(--accent-bg); }
 .admin-page .admin-num { text-align: right;}
+
+.product-detail_admin {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+}
+.product-detail_edit,
+.product-detail_delete {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.product-detail_delete { color: #d93025; border-color: #d93025; }

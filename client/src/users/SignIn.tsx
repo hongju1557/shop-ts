@@ -10,7 +10,6 @@ const initialForm: LoginForm = {
 
 const SignIn = () => {
     const [form, setForm] = useState<LoginForm>(initialForm);
-    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     const {login} = useUser();
@@ -24,9 +23,7 @@ const SignIn = () => {
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (submitting) return;
-        setError(null);  //기본 동작 막기
+        e.preventDefault();  //기본 동작 막기
 
         // 유효성 검사
         if(!username){
@@ -39,15 +36,18 @@ const SignIn = () => {
         }
 
         // 로그인 함수 호출
-        setSubmitting(true);
-        const success = await login({username, password});
-        setSubmitting(false);
-        if(!success){
-            setError("아이디 또는 비밀번호가 일치하지 않습니다.");
-            return;
+        try{
+            const success = await login({username: username.trim(), password});
+            if(!success){
+                setError("아이디 또는 비밀번호가 일치하지 않습니다.");
+                return;
+            }
+            alert("로그인되었습니다.");
+            navigate('/');
+        }catch{
+            setError("로그인 중 오류가 발생했습니다.")
         }
-        alert("로그인되었습니다.");
-        navigate('/');
+        
     }
 
     return(
@@ -76,9 +76,8 @@ const SignIn = () => {
                         placeholder="비밀번호를 입력해주세요"
                     />
                 </div>
-                {error && 
-                    <p className="sign-up_error">{error}</p>}
-                <button type="submit" disabled={submitting}>{submitting ? "로그인 중…" : "로그인"}</button>
+                {error && <p className="sign-up_error">{error}</p>}
+                <button type="submit">로그인</button>
             </form>
 
             {/* 회원 가입 링크 */}

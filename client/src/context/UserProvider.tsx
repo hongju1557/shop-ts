@@ -4,31 +4,31 @@ import type { User, NewUser, LoginForm } from "../types/user";
 import { getUsers, requestLogin, createUser } from "../api/users";
 
 const UserProvider = ({children}: {children: React.ReactNode}) => {
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>([]); //빈 배열
     const [currentUser, setCurrentUser] = useState<User | null>(null);
 
+    // 회원 목록 조회
     useEffect(() => {
-        getUsers()
-        .then(setUsers)
-        .catch(err => console.log("회원 목록 조회 오류", err));
-        ;
-    },[]);
+        getUsers()   //함수 호출
+            .then(setUsers)
+            .catch(err => console.log("회원목록 조회 오류!", err));
+    }, []);
 
     // 회원가입 함수
-    const signup = async (newUser: NewUser) => {
-        const user = await createUser(newUser);
-        setUsers(previous => [...previous, user]);
+    const signup = async ( newUser: NewUser) => {
+        await createUser(newUser); // DB 저장
+        setUsers(await getUsers()); // 회원 배열에 저장
     }
 
-    // 로그인 함수
+    // 로그인 함수 - loginForm(username, password)
     const login = async (loginForm: LoginForm) => {
-        try {
-            const user = await requestLogin(loginForm)
-            setCurrentUser(user);
-            return true;
-        } catch {
-            return false;
-        }
+       try{
+          const user = await requestLogin(loginForm);
+          setCurrentUser(user);  //로그인한 유저를 저장
+          return true;
+       }catch{
+          return false;
+       }
     }
 
     // 로그아웃 함수

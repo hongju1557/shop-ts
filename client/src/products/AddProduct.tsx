@@ -1,6 +1,5 @@
-import { errorMessage } from "../api/errors";
 import { useState } from "react";
-import type { ProductForm, Product } from "../types/product";
+import type { ProductForm } from "../types/product";
 import { useProduct } from "../context/ProductContext";
 import { useNavigate } from "react-router-dom";
 
@@ -9,18 +8,18 @@ const initialForm: ProductForm = {
     pName: "",
     category: "마우스",
     price: 0,
-    description: ""
+    description: "",
+    image: ""
 }
 
-const AddProduct = ({ product }: { product?: Product }) => {
-    const [form, setForm] = useState<ProductForm>(product ?? initialForm);
-    const { addProduct, updateProduct } = useProduct();
-    const [submitting, setSubmitting] = useState(false);
+const AddProduct = () => {
+    const [form, setForm] = useState<ProductForm>(initialForm);
+    const { addProduct } = useProduct();
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     // 폼에 입력된 데이터 가져오기
-    const { pName, category, price, description } = form;
+    const { pName, category, price, description, image } = form;
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -31,15 +30,13 @@ const AddProduct = ({ product }: { product?: Product }) => {
     //  폼 제출 핸들러
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (submitting) return;
-        setError(null);
 
         // 유효성 검사
         if(!pName.trim()){
             setError("상품명을 입력해주세요")
             return;
         }
-        if(!Number.isSafeInteger(Number(price)) || Number(price) <= 0 || Number(price) > 2147483647){
+        if(!price || price <= 0){
             setError("가격을 올바르게 입력해주세요")
             return;
         }
@@ -49,32 +46,30 @@ const AddProduct = ({ product }: { product?: Product }) => {
         }
 
         // 상품 추가 함수 호출
-        const values = {
-            pName: pName.trim(), category, price: Number(price),
-            description: description.trim(), image: product?.image
-        };
-        setSubmitting(true);
-        try {
-            if (product) await updateProduct(product.id, values);
-            else await addProduct(values);
-            alert(product ? "상품이 수정되었습니다." : "상품이 등록되었습니다.");
-            navigate(product ? `/product/${product.id}` : '/');
-        } catch (err) {
-            setError(errorMessage(err, '상품 저장에 실패했습니다. 다시 시도해주세요.'));
-        } finally {
-            setSubmitting(false);
+        try{
+            await addProduct({
+                pName,
+                category,
+                price: Number(price),  //화면에 입력한 가격은 문자형이므로 숫자형변환
+                description,
+                image: image || undefined
+            });
+            alert("상품이 등록되었습니다.");
+            navigate('/');  //상품 목록으로 이동
+        }catch{
+            setError("상품 등록중 오류가 발생했습니다.");
         }
     }
 
     // 취소 버튼 - 폼 초기화
     const handleCancel = () => {
-        setForm(product ?? initialForm);
+        setForm(initialForm);
         setError(null);
     }
 
     return(
         <div className="product-add">
-            <h2>{product ? "상품 수정" : "상품 등록"}</h2>
+            <h2>상품 등록</h2>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="pName">상품명</label>
@@ -122,10 +117,26 @@ const AddProduct = ({ product }: { product?: Product }) => {
                         rows={4}
                     />
                 </div>
+                <div>
+                    <label htmlFor="image">이미지:</label>
+                    <select
+                        id="image"
+                        name="image"
+                        value={image}
+                        onChange={handleChange}
+                    >
+                        <option value="">선택 안 함</option>
+                        <option value="/images/mouse.png">마우스</option>
+                        <option value="/images/keyboard.png">키보드</option>
+                        <option value="/images/monitor.png">모니터</option>
+                        <option value="/images/usb-hub.png">USB-C 허브</option>
+                        <option value="/images/webcam.png">웹캠</option>
+                    </select>
+                    </div>
                 {error && 
                     <p className="product-add_error">{error}</p>}
                 <div className="product-add_buttons">
-                    <button type="submit" disabled={submitting}>{submitting ? "저장 중…" : product ? "수정" : "등록"}</button>
+                    <button type="submit">등록</button>
                     <button 
                         type="button"
                         onClick={handleCancel}
