@@ -1,6 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import cors from 'cors'
+import bcrypt from "bcrypt"
 
 // express 객체 생성
 const app = express();
@@ -115,22 +116,44 @@ app.get("/api/users", async (req, res) => {
 // 로그인
 app.post("/api/users/login", async (req, res) => {
     const { username, password } = req.body;
-    const sql = "SELECT id, username, name, email, role FROM users WHERE "
-            + "username=$1 AND password=$2 ";
-    try{
-        const result = await db.query(sql, [username, password]);
-        // 401: 인증실패,  404: 페이지를 찾을 수 없을때
-        if(result.rows.length === 0){
+
+    if (typeof username !== "string" || typeof password !== "string") {
+        return res.status(400).send("아이디와 비밀번호를 입력해주세요.");
+    }
+
+    const sql =
+        "SELECT id, username, password, name, email, role FROM users WHERE username=$1";
+
+    try {
+        const result = await db.query(sql, [username]);
+        const user = result.rows[0];
+
+        if (!user) {
             return res.status(401).send("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
+
+        // 입력한 비밀번호와 DB에 저장된 해시 비교
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).send("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 비밀번호 해시는 응답에서 제외
         res.json({
             message: "로그인 성공",
-            user: result.rows[0]
-        });  //요청한 곳으로 json형식으로 반환
-    }catch(err){
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (err) {
         console.error("회원 로그인 중 오류!!", err);
-        res.status(500).send("회원 로그인 중 오류!!")
-    } 
+        res.status(500).send("회원 로그인 중 오류!!");
+    }
 });
 
 // 회원 가입
@@ -139,7 +162,9 @@ app.post("/api/users", async (req, res) => {
     const sql = "INSERT INTO users(username, password, name, email) "
             + "VALUES ($1, $2, $3, $4)";
     try{
-        await db.query(sql, [username, password, name, email]);
+        //비밀번호 암호화
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await db.query(sql, [username, hashedPassword, name, email]);
         res.send("회원 가입 완료!");
     }catch(err){
         console.error("회원가입 중 오류!!", err);
@@ -155,3 +180,4 @@ app.post("/api/users", async (req, res) => {
 app.listen(PORT, () => {
     console.log(`서버 실행중... http://localhost:${PORT}`);
 })
+

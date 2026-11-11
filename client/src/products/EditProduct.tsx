@@ -68,6 +68,10 @@ const EditProductForm = ({ product }: { product: Product }) => {
     };
 
     const handleCancel = () => {
+        navigate("/");
+    };
+
+    const handleReset = () => {
         setForm(initialForm);
         setError(null);
     };
@@ -142,6 +146,10 @@ const EditProductForm = ({ product }: { product: Product }) => {
                     <p className="product-add_error">{error}</p>}
                 <div className="product-add_buttons">
                     <button type="submit" disabled={isSubmitting}>{isSubmitting ? "수정 중..." : "수정"}</button>
+                    <button
+                        type="button"
+                        onClick={handleReset} disabled={isSubmitting}
+                    >되돌리기</button>
                     <button
                         type="button"
                         onClick={handleCancel} disabled={isSubmitting}
