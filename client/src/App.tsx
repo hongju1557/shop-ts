@@ -13,6 +13,7 @@ import SignIn from './users/SignIn'
 import AdminPage from './users/AdminPage'
 import EditProduct from './products/EditProduct'
 import AdminRoute from './users/AdminRoute'
+import MyPage from './users/MyPage'
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
                   <Route path='/product/:id/edit' element={<EditProduct />} />
                   <Route path='/admin' element={<AdminPage />} />
                 </Route>
+                  <Route path='/mypage' element={<MyPage/>}></Route>
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/signup' element={<SignUp />} />
                 <Route path='/signin' element={<SignIn />} />

@@ -1,6 +1,6 @@
 // Context API 
 import { createContext, useContext } from "react";
-import type { User, NewUser, LoginForm } from "../types/user";
+import type { User, NewUser, LoginForm, UserUpdateForm } from "../types/user";
 
 // 회원 컨텍스트 타입 정의
 // 구현할 기능을 선언하는 타입 정의
@@ -10,7 +10,8 @@ interface UserContextType{
     currentUser: User | null; //로그인한 회원
     signup: (newUser: NewUser) => Promise<void>; // 회원가입
     login: (loginForm: LoginForm) => Promise<boolean>; //로그인 성공 여부 반환
-    logout: () => void;  //로그아웃
+    logout: () => Promise<void>;  //로그아웃
+    updateUser: (form: UserUpdateForm) => Promise<void>; //회원 정보 수정
 }
 
 // 회원 컨텍스트 생성

@@ -1,5 +1,5 @@
 import api from "./api"
-import type { User, LoginForm, NewUser } from "../types/user";
+import type { User, LoginForm, NewUser, UserUpdateForm } from "../types/user";
 
 // 로그인 반환 타입 정의
 interface LoginResponse{
@@ -14,6 +14,15 @@ export const requestLogin = async (loginForm: LoginForm) => {
         return response.data.user;
 }
 
+export const getCurrentUser = async () => {
+    const response = await api.get<{ user: User | null }>('/users/me');
+    return response.data.user;
+}
+
+export const requestLogout = async () => {
+    await api.post('/users/logout');
+}
+
 // 회원 목록 조회
 export const getUsers = async () => {
     const response = await api.get<User[]>('/users');
@@ -24,4 +33,9 @@ export const getUsers = async () => {
 export const createUser = async (newUser: NewUser) => {
     const { username, password, name, email } = newUser;
     await api.post("/users", { username, password, name, email});
+}
+
+export const modifyuser = async (id: number, form: UserUpdateForm) => {
+    const response = await api.put<User>(`/users/${id}`, form);
+    return response.data
 }

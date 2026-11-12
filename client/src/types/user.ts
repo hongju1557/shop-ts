@@ -14,6 +14,9 @@ export interface User{
 // 회원 가입시 저장하는 값
 export type NewUser = Omit<User, "id"> & { password: string }
 
+// 회원 정보 수정 폼 타입 (아이디는 API 경로로 전달)
+export type UserUpdateForm = Pick<User, "name" | "email">;
+
 // 회원 가입 폼 타입(DTO-화면으로 전달되는 데이터)  
 /*export interface SignUpForm{
     username: string;
